@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "ES2020",
+        "sourceMap": true,
+        "outDir": "dev",
+        "strict": true,
+        // TODO: Remove this when vite GH issue is updated
+        "skipLibCheck": true,
+        "rootDir": "./",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+        },
+    },
+    "include": [
+        "src/**/*",
+        "test/**/*"
+    ],
+}

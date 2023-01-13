@@ -1,0 +1,13 @@
+# Runtime
+node_modules
+
+# Envs
+.env
+.env.dev
+
+# Build outputs
+dev
+prod
+
+# Coverage and logs
+coverage

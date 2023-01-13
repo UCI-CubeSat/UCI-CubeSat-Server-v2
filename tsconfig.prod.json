@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "prod",
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "sourceMap": false,
+    },
+    "exclude": [
+        "test/**/*"
+    ]
+}
