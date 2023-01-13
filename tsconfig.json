@@ -15,6 +15,7 @@
                 "./src/*"
             ],
         },
+        "noErrorTruncation": true
     },
     "include": [
         "src/**/*",
