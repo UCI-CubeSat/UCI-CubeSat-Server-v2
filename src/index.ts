@@ -1,6 +1,5 @@
 import express from 'express'
 import cors from 'cors'
-import { env } from '@/services/env.js'
 import { exampleRouter } from '@/routes/example.js'
 import { loggingMiddleware } from './middlewares/example.js'
 
@@ -14,6 +13,6 @@ app.use(loggingMiddleware)
 // Attach routers
 app.use('/example', exampleRouter)
 
-app.listen(env.PORT, () => {
-    console.log(`Example app listening on port ${env.PORT}`)
+app.listen('8080', () => {
+    console.log(`Example app listening on port 8080`)
 })
