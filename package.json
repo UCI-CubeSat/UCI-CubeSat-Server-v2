@@ -5,6 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "clean:prod": "rimraf ./prod",
+    "clean:dev": "rimraf ./dev",
+    "clean": "npm-run-all --parallel clean:dev clean:prod",
     "tsc:prod": "tsc -p tsconfig.prod.json",
     "alias:prod": "tsc-alias -p tsconfig.prod.json",
     "tsc:dev": "tsc -p tsconfig.json",
@@ -33,16 +36,17 @@
     "nodemon": "^2.0.20",
     "npm-run-all": "^4.1.5",
     "prisma": "^4.8.1",
+    "rimraf": "^4.0.5",
     "supertest": "^6.3.3",
     "tsc-alias": "^1.8.2",
     "typescript": "^4.9.4",
     "vitest": "^0.26.3"
   },
   "dependencies": {
+    "@prisma/client": "^4.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "ts-node": "^10.9.1",
     "zod": "^3.20.2"
   }
 }
