@@ -27,7 +27,7 @@ There are scripts for running the build process, starting the server, and runnin
     - `controllers` are responsible for processing a request, composing services and utils to create a response, and sending the response. These files defines the API for each endpoint.
     - `middlewares` are used for performing actions on every reqeust that hits the app or route it is attached to. Examples are logging and checking auth status.
     - `models` define the shape of entities that are involved in the code.
-    - `services` are responsible for interfacing with external data providers (ex. database), API's, or other data producing logic that a controller would need.
-    - `utils` are commonly used functions (key being that it is used in multiple places, regardless of domain).
+    - `services` are responsible for interfacing with external data providers (ex. database), API's, or other data producing logic that a controller would need. Also, they take care of core logic for the backend.
+    - `utils` are commonly used functions (key being that it is meant for convenience of the devs, not a core functionality of the dashboard).
     - `index.ts` is the main file that is ran when server starts
 - Test is split into unit tests and integration tests.
