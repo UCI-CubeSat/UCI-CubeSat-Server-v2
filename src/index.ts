@@ -1,19 +1,19 @@
 import express from 'express'
 import cors from 'cors'
-import { exampleRouter } from '@/routes/example.js'
-import { loggingMiddleware } from './middlewares/example.js'
-import { env } from "@/services/env.js";
+import { env } from '@/services/env.js'
+import { satelliteController } from './controllers/satellite.js'
 
-const app = express()
+const expressApp = express()
 
 // Top level middlewares
-app.use(cors())
-app.use(express.json());
-app.use(loggingMiddleware)
+expressApp.use(cors())
+expressApp.use(express.json());
+
+// Attach additional middlewares
 
 // Attach routers
-app.use('/example', exampleRouter)
+expressApp.use('/satellite', satelliteController)
 
-app.listen(env.PORT, '0.0.0.0', () => {
+expressApp.listen(env.PORT, '0.0.0.0', () => {
     console.log(`Example app listening on port ${env.PORT}`)
 })
