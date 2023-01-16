@@ -6,8 +6,6 @@
         "sourceMap": true,
         "outDir": "dev",
         "strict": true,
-        // TODO: Remove this when vite GH issue is updated
-        "skipLibCheck": true,
         "rootDir": "./",
         "baseUrl": ".",
         "paths": {
