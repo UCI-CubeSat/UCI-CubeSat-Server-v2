@@ -13,20 +13,14 @@ const PostGetListRequestBodyValidator = z.object({
 })
 type PostGetListResponseType = {
     error: false,
-    logs: Array<{ data: string }>
+    logs: Array<unknown>
 }
 satelliteController.get('/getList', createController((req, res: Response<PostGetListResponseType | GenericErrorResponse>) => {
     try {
         const body = PostGetListRequestBodyValidator.parse(req.body)
-        const logs = []
-        for (let i = 0; i < body.limit; i++) {
-            logs.push({
-                data: `data-${i}`
-            })
-        }
         res.status(200).json({
             error: false,
-            logs
+            logs: []
         })
     }
     catch (e) {

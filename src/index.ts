@@ -6,14 +6,14 @@ import { satelliteController } from './controllers/satellite.js'
 const expressApp = express()
 
 // Top level middlewares
-expressApp.use(cors())
+expressApp.use(cors({
+    origin: env.FRONTEND_ORIGIN
+}))
 expressApp.use(express.json());
-
-// Attach additional middlewares
 
 // Attach routers
 expressApp.use('/satellite', satelliteController)
 
-expressApp.listen(env.PORT, '0.0.0.0', () => {
+expressApp.listen(env.PORT, env.HOST_NAME, () => {
     console.log(`Example app listening on port ${env.PORT}`)
 })
