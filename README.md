@@ -6,6 +6,8 @@ This repository is meant to be a the server used for groudstation dashboard.
 - Run `pnpm install` to install dependancies.
 - Create .env.dev file with fields specified in env.ts service.
   - PORT=5000
+  - HOST_NAME=127.0.0.1
+  - FRONTEND_ORIGIN=http://localhost:5173
 - Run scripts below as needed.
 
 ## Scripts
