@@ -33,5 +33,5 @@ There are scripts for running the build process, starting the server, and runnin
     - `models` define the shape of entities that are involved in the code.
     - `services` are responsible for interfacing with external data providers (ex. database), API's, or other data producing logic that a controller would need. Also, they take care of core logic for the backend.
     - `utils` are commonly used functions (key being that it is meant for convenience of the devs, not a core functionality of the dashboard).
-    - `index.ts` is the main file that is ran when server starts
-- Test is split into unit tests and integration tests.
+    - `index.ts` is the main file that is ran when server starts.
+- Tests are split based on type.
