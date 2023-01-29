@@ -8,6 +8,8 @@
         "strict": true,
         "rootDir": "./",
         "baseUrl": ".",
+        // Track this issue to turn on libCheck: https://github.com/vitejs/vite/issues/11552
+        "skipLibCheck": true,
         "paths": {
             "@/*": [
                 "./src/*"

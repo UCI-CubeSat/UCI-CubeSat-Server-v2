@@ -2,12 +2,13 @@
 This repository is meant to be a the server used for groudstation dashboard.
 
 ## Instructions
-- Create copy of repository.
+- Clone repository.
 - Run `pnpm install` to install dependancies.
 - Create .env.dev file with fields specified in env.ts service.
   - PORT=5000
   - HOST_NAME=127.0.0.1
   - FRONTEND_ORIGIN=http://localhost:5173
+  - DATABASE_URL=[Contact Team Lead for this]
 - Run scripts below as needed.
 
 ## Scripts
@@ -18,8 +19,9 @@ There are scripts for running the build process, starting the server, and runnin
 - `build:prod` and `build:dev` run the Typescript compilation and alias correction at the same time.
 - `start:prod` and `start:dev` starts the server with the appropriate environment.
 - `prod` and `dev` runs the build step and starts the server
+- Note that before running `dev` or `dev:watch`, run `db:pull:dev` as needed to make sure Prisma is synced with DB. `prod` calls this by default to make sure DB and server are in sync at deployment time.
 - All options that have watch at the end run the same command but in watch mode.
-- `test` runs the `vitest` tests. Note that it does not build.
+- `test` runs the `vitest` tests. Note that it does not build, so `build:dev` should be called before running `test`.
 
 ## About Structure
 - The `.env` and `.env.dev` are for production and development respectively
