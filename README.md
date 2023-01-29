@@ -2,12 +2,13 @@
 This repository is meant to be a the server used for groudstation dashboard.
 
 ## Instructions
-- Create copy of repository.
+- Clone repository.
 - Run `pnpm install` to install dependancies.
 - Create .env.dev file with fields specified in env.ts service.
   - PORT=5000
   - HOST_NAME=127.0.0.1
   - FRONTEND_ORIGIN=http://localhost:5173
+  - DATABASE_URL=[Contact Team Lead for this]
 - Run scripts below as needed.
 
 ## Scripts
@@ -18,8 +19,9 @@ There are scripts for running the build process, starting the server, and runnin
 - `build:prod` and `build:dev` run the Typescript compilation and alias correction at the same time.
 - `start:prod` and `start:dev` starts the server with the appropriate environment.
 - `prod` and `dev` runs the build step and starts the server
+- Note that before running `dev` or `dev:watch`, run `db:pull:dev` as needed to make sure Prisma is synced with DB. `prod` calls this by default to make sure DB and server are in sync at deployment time.
 - All options that have watch at the end run the same command but in watch mode.
-- `test` runs the `vitest` tests. Note that it does not build.
+- `test` runs the `vitest` tests. Note that it does not build, so `build:dev` should be called before running `test`.
 
 ## About Structure
 - The `.env` and `.env.dev` are for production and development respectively
@@ -31,5 +33,5 @@ There are scripts for running the build process, starting the server, and runnin
     - `models` define the shape of entities that are involved in the code.
     - `services` are responsible for interfacing with external data providers (ex. database), API's, or other data producing logic that a controller would need. Also, they take care of core logic for the backend.
     - `utils` are commonly used functions (key being that it is meant for convenience of the devs, not a core functionality of the dashboard).
-    - `index.ts` is the main file that is ran when server starts
-- Test is split into unit tests and integration tests.
+    - `index.ts` is the main file that is ran when server starts.
+- Tests are split based on type.

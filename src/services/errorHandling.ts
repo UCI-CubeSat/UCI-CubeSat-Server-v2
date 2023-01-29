@@ -1,12 +1,14 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index.js';
-import type { Response, Request } from 'express';
-import { ZodError } from 'zod';
+import type { Response } from 'express';
+import { ZodError, z } from 'zod';
 import { errorMessages } from '../utils/errorMessages.js';
 
-export type GenericErrorResponse = {
-    error: true,
-    errorMessage: string,
-}
+export const GenericErrorResponseValidator = z.object({
+    error: z.literal(true),
+    errorMessage: z.string()
+})
+
+export type GenericErrorResponse = z.infer<typeof GenericErrorResponseValidator>
 
 export type ErrorHandler<T> = {
     type: new (...args: any[]) => T,

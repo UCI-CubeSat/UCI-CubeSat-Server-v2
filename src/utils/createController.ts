@@ -5,11 +5,11 @@ import { logNoSendError } from '@/utils/logging.js'
 
 
 export const createController = (
-    controllerFunction: (req: Request, res: Response) => void
+    controllerFunction: (req: Request, res: Response) => Promise<void>
 ) => {
-    return (req: Request, res: Response) => {
+    return async (req: Request, res: Response) => {
         try {
-            controllerFunction(req, res)
+            await controllerFunction(req, res)
         }
         finally {
             if (!res.headersSent) {
