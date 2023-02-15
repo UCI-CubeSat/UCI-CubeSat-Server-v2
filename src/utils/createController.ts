@@ -1,7 +1,7 @@
+import { logErrorNotCaught, logNoResponseSent } from '@/utils/logging.js'
 import type { Request, Response } from 'express'
 import { GenericErrorResponse } from '../services/errorHandling.js'
 import { errorMessages } from './errorMessages.js'
-import { logNoSendError } from '@/utils/logging.js'
 
 
 export const createController = (
@@ -11,12 +11,14 @@ export const createController = (
         try {
             await controllerFunction(req, res)
         }
+        catch (e) {
+            logErrorNotCaught(req, e)
+        }
         finally {
             if (!res.headersSent) {
-                logNoSendError(req)
+                logNoResponseSent(req)
                 res.status(500).json({
-                    error: true,
-                    errorMessage: errorMessages["500"]
+                    message: errorMessages["500"]
                 } as GenericErrorResponse)
             }
         }

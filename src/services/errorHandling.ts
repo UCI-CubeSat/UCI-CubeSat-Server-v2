@@ -4,8 +4,7 @@ import { ZodError, z } from 'zod';
 import { errorMessages } from '../utils/errorMessages.js';
 
 export const GenericErrorResponseValidator = z.object({
-    error: z.literal(true),
-    errorMessage: z.string()
+    message: z.string()
 })
 
 export type GenericErrorResponse = z.infer<typeof GenericErrorResponseValidator>
@@ -24,6 +23,21 @@ export const handleError = (e: unknown, res: Response<GenericErrorResponse>, han
         }
     }
 }
+// Custom Error Types
+
+export class RequestBodyError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = "RequestBodyError"
+    }
+}
+
+export class DatabaseDataError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = "DatabaseDataError"
+    }
+}
 
 // Define Error Handlers Below
 
@@ -31,8 +45,25 @@ export const ZodErrorHandler: ErrorHandler<ZodError> = {
     type: ZodError,
     resolve: (e, res) => {
         res.status(400).json({
-            error: true,
-            errorMessage: errorMessages["400"]
+            message: errorMessages["400"]
+        })
+    }
+}
+
+export const RequestBodyErrorHandler: ErrorHandler<RequestBodyError> = {
+    type: RequestBodyError,
+    resolve: (e, res) => {
+        res.status(400).json({
+            message: errorMessages["400"]
+        })
+    }
+}
+
+export const DatabaseDataErrorHandler: ErrorHandler<DatabaseDataError> = {
+    type: DatabaseDataError,
+    resolve: (e, res) => {
+        res.status(500).json({
+            message: errorMessages["known-database-error"]
         })
     }
 }
@@ -41,8 +72,7 @@ export const PrismaKnownRequestErrorHandler: ErrorHandler<PrismaClientKnownReque
     type: PrismaClientKnownRequestError,
     resolve: (e: PrismaClientKnownRequestError, res: Response<GenericErrorResponse>) => {
         res.status(500).json({
-            error: true,
-            errorMessage: errorMessages["known-database-error"],
+            message: errorMessages["known-database-error"],
         })
     }
 }
@@ -51,8 +81,7 @@ export const ServerErrorHandler: ErrorHandler<Error> = {
     type: Error,
     resolve: (e: Error, res: Response<GenericErrorResponse>) => {
         res.status(500).json({
-            error: true,
-            errorMessage: errorMessages["500"]
+            message: errorMessages["500"]
         })
     }
 }

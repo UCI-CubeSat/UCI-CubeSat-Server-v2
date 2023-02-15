@@ -1,7 +1,8 @@
 import { ParsedLogValidator } from '@/models/logs.js'
 import { prisma } from '@/services/db.js'
-import { GenericErrorResponse, PrismaKnownRequestErrorHandler, ServerErrorHandler, ZodErrorHandler, handleError } from "@/services/errorHandling.js"
+import { DatabaseDataError, DatabaseDataErrorHandler, GenericErrorResponse, PrismaKnownRequestErrorHandler, RequestBodyError, RequestBodyErrorHandler, ServerErrorHandler, handleError } from "@/services/errorHandling.js"
 import { createController } from "@/utils/createController.js"
+import { customError as customErrorIfFail } from "@/utils/customError.js"
 import { logError } from "@/utils/logging.js"
 import { Response, Router } from "express"
 import { z } from "zod"
@@ -17,14 +18,13 @@ export const PostLogListReqBodyValidator = z.object({
     end: z.number().min(1)
 })
 export const PostLogListResBodyValidator = z.object({
-    error: z.literal(false),
     logs: z.array(ParsedLogValidator)
 })
 export type PostLogListReqBody = z.infer<typeof PostLogListReqBodyValidator>
 export type PostLogListResBody = z.infer<typeof PostLogListResBodyValidator>
 satelliteController.post('/logList', createController(async (req, res: Response<PostLogListResBody | GenericErrorResponse>) => {
     try {
-        const body = PostLogListReqBodyValidator.parse(req.body)
+        const body = customErrorIfFail(PostLogListReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await prisma.log.findMany({
             orderBy: [
                 {
@@ -38,17 +38,16 @@ satelliteController.post('/logList', createController(async (req, res: Response<
                 }
             }
         })
-
         res.status(200).json({
-            error: false,
-            logs: z.array(ParsedLogValidator).parse(databaseLogs)
+            logs: customErrorIfFail(z.array(ParsedLogValidator).safeParse(databaseLogs), DatabaseDataError)
         })
     }
     catch (e) {
         handleError(e, res,
             [
-                ZodErrorHandler,
+                RequestBodyErrorHandler,
                 PrismaKnownRequestErrorHandler,
+                DatabaseDataErrorHandler,
                 ServerErrorHandler
             ]
         )

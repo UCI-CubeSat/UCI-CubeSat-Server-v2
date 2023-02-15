@@ -41,7 +41,7 @@ describe('Satellite Controller', () => {
         expect(mock).not.toBeCalled()
         expect(response.status).toEqual(400)
         expect(() => GenericErrorResponseValidator.parse(response.body)).not.toThrow()
-        expect(response?.body?.errorMessage).toEqual(errorMessages[400])
+        expect(response?.body?.message).toEqual(errorMessages[400])
     })
 
     it('returns an error when database throws error', async () => {
@@ -53,7 +53,7 @@ describe('Satellite Controller', () => {
         expect(mock).toHaveBeenCalledOnce()
         expect(response.status).toEqual(500)
         expect(() => GenericErrorResponseValidator.parse(response.body)).not.toThrow()
-        expect(response?.body?.errorMessage).toEqual(errorMessages[500])
+        expect(response?.body?.message).toEqual(errorMessages[500])
     })
 
 
