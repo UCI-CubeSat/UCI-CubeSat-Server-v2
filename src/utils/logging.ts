@@ -5,6 +5,11 @@ import { ZodError } from "zod"
 export const createGeneralInfo = (req: Request) =>
     `${req.method} ${req.url} with body: ${JSON.stringify(req.body)} and headers: ${JSON.stringify(req.headers)} at ${new Date()}`
 
+export const logSuccess = (req: Request) => {
+    const generalInfo = createGeneralInfo(req)
+    console.log(`${generalInfo} | Success`)
+}
+
 export const logErrorNotCaught = (req: Request, e: unknown) => {
     const generalInfo = createGeneralInfo(req)
     console.error(`${generalInfo} | Failed to catch error for this route. Error ${e}`)
