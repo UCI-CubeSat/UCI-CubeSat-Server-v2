@@ -23,7 +23,7 @@ COPY .nvmrc* ./
 COPY package.json pnpm-lock.yaml* ./
 RUN \
   if [ -f pnpm-lock.yaml ]; then npm install -g pnpm \
-    && pnpm i --frozen-lockfile; \
+  && pnpm i --frozen-lockfile; \
   elif [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   else npm i --no-optional; \
   fi
@@ -36,9 +36,8 @@ WORKDIR /opt/app
 RUN chmod -R 0777 /opt/app
 COPY --from=builder-base /app/node_modules ./node_modules
 COPY . .
-RUN npm run build:prod
-
 ENV ENV=${ENV:-qa}
+RUN npm run build:prod
 RUN addgroup --system --gid 1001 nodejs
 USER 10000:10001
 
