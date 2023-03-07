@@ -14,7 +14,7 @@
     "alias:dev": "tsc-alias -p tsconfig.json",
     "tsc:dev:watch": "tsc --watch -p tsconfig.json",
     "alias:dev:watch": "tsc-alias --watch -p tsconfig.json",
-    "build:prod": "npm run db:pull:prod && npm run db:generate && npm run tsc:prod && npm run alias:prod",
+    "build:prod": "npm run db:generate && npm run tsc:prod && npm run alias:prod",
     "build:dev": "npm run db:generate && npm run tsc:dev && npm run alias:dev",
     "build:dev:watch": "npm run db generate && npm-run-all --parallel tsc:dev:watch alias:dev:watch",
     "start:prod": "cross-env NODE_ENV=production node -r dotenv/config ./prod/src/index.js",
