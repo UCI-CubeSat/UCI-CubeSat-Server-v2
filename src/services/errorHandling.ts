@@ -39,6 +39,13 @@ export class DatabaseDataError extends Error {
     }
 }
 
+export class StartNotBeforeEndError extends Error {
+    constructor() {
+        super("Start is not before end.")
+        this.name = "RequestBodyError"
+    }
+}
+
 // Define Error Handlers Below
 
 export const ZodErrorHandler: ErrorHandler<ZodError> = {
@@ -55,6 +62,15 @@ export const RequestBodyErrorHandler: ErrorHandler<RequestBodyError> = {
     resolve: (e, res) => {
         res.status(400).json({
             message: errorMessages["400"]
+        })
+    }
+}
+
+export const StartNotBeforeEndErrorHandler: ErrorHandler<StartNotBeforeEndError> = {
+    type: RequestBodyError,
+    resolve: (e, res) => {
+        res.status(400).json({
+            message: e.message
         })
     }
 }

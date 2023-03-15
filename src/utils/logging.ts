@@ -31,6 +31,6 @@ export const logError = (e: unknown, req: Request) => {
             console.error(`${generalInfo} | PrismaClientKnownRequestError with code ${(e as PrismaClientKnownRequestError).code}.`)
             break;
         default:
-            console.error(`${generalInfo} | Unknown error occured.`)
+            console.error(`${generalInfo} | Unknown error occured: ${e}`)
     };
 }
