@@ -1,4 +1,4 @@
-import { PostLogListResBodyValidator } from '@/controllers/satellite.js'
+import { PostByRangeResBodyValidator } from '@/controllers/satellite.js'
 import expressApp from '@/server.js'
 import { prisma } from '@/services/db.js'
 import { env } from '@/services/env.js'
@@ -29,7 +29,7 @@ describe('Satellite Controller', () => {
             end: 10
         })
         expect(mock).toHaveBeenCalledOnce()
-        expect(() => PostLogListResBodyValidator.parse(response.body)).not.toThrow()
+        expect(() => PostByRangeResBodyValidator.parse(response.body)).not.toThrow()
     })
 
     it('returns an error when start is invalid', async () => {

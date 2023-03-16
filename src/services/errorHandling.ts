@@ -25,6 +25,13 @@ export const handleError = (e: unknown, res: Response<GenericErrorResponse>, han
 }
 // Custom Error Types
 
+export class DatabaseServiceParamError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = "DatabaseServiceParamError"
+    }
+}
+
 export class RequestBodyError extends Error {
     constructor(message: string) {
         super(message)
@@ -65,6 +72,17 @@ export const RequestBodyErrorHandler: ErrorHandler<RequestBodyError> = {
         })
     }
 }
+
+export const DatabaseServiceParamErrorHandler: ErrorHandler<DatabaseServiceParamError> = {
+    type: DatabaseServiceParamError,
+    resolve: (e, res) => {
+        res.status(400).json({
+            message: errorMessages["400"]
+        })
+    }
+}
+
+
 
 export const StartNotBeforeEndErrorHandler: ErrorHandler<StartNotBeforeEndError> = {
     type: RequestBodyError,

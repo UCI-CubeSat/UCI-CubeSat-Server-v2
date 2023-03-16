@@ -8,7 +8,7 @@ type SafeParseResult<T> = {
     error: ZodError<any>
 }
 
-export const customError = <T, E>(safeParseResult: SafeParseResult<T>, error: new (...args: any[]) => E) => {
+export const customErrorIfSafeParseError = <T, E>(safeParseResult: SafeParseResult<T>, error: new (...args: any[]) => E) => {
     if (safeParseResult.success) {
         return safeParseResult.data
     }
