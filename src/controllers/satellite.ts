@@ -42,55 +42,62 @@ satelliteController.post('/by_time_range', createController(async (req, res: Res
         logError(e, req)
     }
 }))
-/*
-Frontend provides 2 possible cases:
-    index: number (position of first log to be returned)
-    count: number of logs wanted
 
-    or
 
-    cursor: timestamp of log for cursor
-    skip: boolean whether or not to skip the cursor value
-    count: number of logs wanted
-
-    values returned:
-    cursorForPrev: can be null if no prev. If there is prev, do not use skip
-    cursorForNext: can be null if no next. If there is next, use skip,
-    data: list of logs
-*/
-export const PostPaginatedReqBodyValidator = z.discriminatedUnion("type", [
-    z.object({
-        type: z.literal("offset"),
-        index: z.number().min(0), // Indexed log is always included
-        count: z.number().min(1),
-    }),
-    z.object({
-        type: z.literal("cursor"),
-        cursor: z.number().min(0), // Cursor log is never provided
-        count: z.number().min(1),
-        direction: z.enum(["forward", "backward"])
-    })
-])
-export const PostPaginatedResBodyValidator = z.object({
-    logs: z.array(ParsedLogValidator),
-    numLogsBefore: z.number(),
-    numLogsAfter: z.number()
+export const PostOffsetReqBodyValidator = z.object({
+    pageNo: z.number().min(1),
+    count: z.number().min(1),
 })
-type PostPaginatedResBody = z.infer<typeof PostPaginatedResBodyValidator>
-satelliteController.post('/paginated', createController(async (req, res: Response<PostPaginatedResBody | GenericErrorResponse>) => {
+export const PostOffsetResBodyValidator = z.object({
+    logs: z.array(ParsedLogValidator),
+    numLogsAfter: z.number(),
+    numLogsBefore: z.number()
+})
+// TODO: Handle error cases where databaseLogs is an empty array
+type PostOffsetResBody = z.infer<typeof PostOffsetResBodyValidator>
+satelliteController.post('/by_offset', createController(async (req, res: Response<PostOffsetResBody | GenericErrorResponse>) => {
     try {
-        const body = customErrorIfSafeParseError(PostPaginatedReqBodyValidator.safeParse(req.body), RequestBodyError)
-        const databaseLogs = body.type === "cursor" ?
-            await getLogsByCursor(body.cursor, body.count, body.direction)
-            :
-            await getLogsByOffset(body.index, body.count)
-
-
-
+        const body = customErrorIfSafeParseError(PostOffsetReqBodyValidator.safeParse(req.body), RequestBodyError)
+        const databaseLogs = await getLogsByOffset((body.pageNo - 1) * body.count, body.count)
         res.status(200).send({
             logs: customErrorIfSafeParseError(z.array(ParsedLogValidator).safeParse(databaseLogs), DatabaseDataError),
             numLogsAfter: await countLogsAroundCursor(databaseLogs[databaseLogs.length - 1].timestamp, "forward"),
             numLogsBefore: await countLogsAroundCursor(databaseLogs[0].timestamp, "backward")
+        })
+    }
+    catch (e) {
+        handleError(e, res,
+            [
+                RequestBodyErrorHandler,
+                DatabaseServiceParamErrorHandler,
+                PrismaKnownRequestErrorHandler,
+                DatabaseDataErrorHandler,
+                ServerErrorHandler
+            ]
+        )
+        logError(e, req)
+    }
+}))
+
+
+// TODO: Currently, this API is not in use, but will be used later
+export const PostCursorReqBodyValidator = z.object({
+    cursor: z.number().min(0), // Cursor log is always included
+    count: z.number().min(1),
+})
+// TODO: Have endpoint return cursor for next and prev as well
+export const PostCursorResBodyValidator = z.object({
+    logs: z.array(ParsedLogValidator),
+})
+type PostPaginatedResBody = z.infer<typeof PostCursorResBodyValidator>
+satelliteController.post('/by_cursor', createController(async (req, res: Response<PostPaginatedResBody | GenericErrorResponse>) => {
+    try {
+        const body = customErrorIfSafeParseError(PostCursorReqBodyValidator.safeParse(req.body), RequestBodyError)
+        const databaseLogs = await getLogsByCursor(body.cursor, body.count)
+        res.status(200).send({
+            logs: customErrorIfSafeParseError(z.array(ParsedLogValidator).safeParse(databaseLogs), DatabaseDataError),
+            // numLogsAfter: await countLogsAroundCursor(databaseLogs[databaseLogs.length - 1].timestamp, "forward"),
+            // numLogsBefore: await countLogsAroundCursor(databaseLogs[0].timestamp, "backward")
         })
     }
     catch (e) {

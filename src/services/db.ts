@@ -52,23 +52,22 @@ export const getLogsByOffset = async (index: number, count: number) => {
 
 
 /**
- * Gets `count` logs before or after the `cursor`, depending on `direction`
+ * Gets `count` log after the `cursor`
  * 
  * Will raise error if `cursor` is not non-negative and `count` is not non-negative
  * 
- * "forward" returns older records, "backward" returns newer records
+ * Includes the cursor provided
  */
-export const getLogsByCursor = async (cursor: number, count: number, direction: "forward" | "backward") => {
+export const getLogsByCursor = async (cursor: number, count: number) => {
     // Check if cursor and count are both non-negative
     customErrorIfSafeParseError(z.number().min(0).safeParse(cursor), DatabaseServiceParamError)
     customErrorIfSafeParseError(z.number().min(0).safeParse(count), DatabaseServiceParamError)
 
     return await prisma.log.findMany({
-        skip: direction === "forward" ? 1 : 0,
         cursor: {
             timestamp: cursor,
         },
-        take: direction === "forward" ? count : -count,
+        take: count,
         orderBy: [
             {
                 timestamp: "desc"
