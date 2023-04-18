@@ -6,9 +6,8 @@ import { RequestBodyErrorHandler, StartNotBeforeEndErrorHandler } from '@/error/
 import { GenericErrorResponse, handleError } from '@/error/index.js'
 import { ParsedLogValidator } from '@/models/logs.js'
 import { countLogsAroundCursor, getLogsByCursor, getLogsByOffset, getLogsByTimeRange } from '@/services/db.js'
-import { createController } from "@/utils/createController.js"
 import { customErrorIfSafeParseError } from "@/utils/customError.js"
-import { logError } from "@/utils/logging.js"
+import { ensureResponse } from "@/utils/ensureResponse.js"
 import { Response, Router } from "express"
 import { z } from "zod"
 
@@ -26,7 +25,7 @@ export const PostByRangeResBodyValidator = z.object({
     logs: z.array(ParsedLogValidator)
 })
 type PostLogListResBody = z.infer<typeof PostByRangeResBodyValidator>
-satelliteController.post('/by_time_range', createController(async (req, res: Response<PostLogListResBody | GenericErrorResponse>) => {
+satelliteController.post('/by_time_range', ensureResponse(async (req, res: Response<PostLogListResBody | GenericErrorResponse>) => {
     try {
         const body = customErrorIfSafeParseError(PostByRangeReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await getLogsByTimeRange(body.start, body.end)
@@ -35,7 +34,7 @@ satelliteController.post('/by_time_range', createController(async (req, res: Res
         })
     }
     catch (e) {
-        handleError(e, res,
+        handleError(e, req, res,
             [
                 RequestBodyErrorHandler,
                 StartNotBeforeEndErrorHandler,
@@ -44,7 +43,6 @@ satelliteController.post('/by_time_range', createController(async (req, res: Res
                 ServerErrorHandler
             ]
         )
-        logError(e, req)
     }
 }))
 
@@ -60,7 +58,7 @@ export const PostOffsetResBodyValidator = z.object({
 })
 // TODO: Handle error cases where databaseLogs is an empty array
 type PostOffsetResBody = z.infer<typeof PostOffsetResBodyValidator>
-satelliteController.post('/by_offset', createController(async (req, res: Response<PostOffsetResBody | GenericErrorResponse>) => {
+satelliteController.post('/by_offset', ensureResponse(async (req, res: Response<PostOffsetResBody | GenericErrorResponse>) => {
     try {
         const body = customErrorIfSafeParseError(PostOffsetReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await getLogsByOffset((body.pageNo - 1) * body.count, body.count)
@@ -71,7 +69,7 @@ satelliteController.post('/by_offset', createController(async (req, res: Respons
         })
     }
     catch (e) {
-        handleError(e, res,
+        handleError(e, req, res,
             [
                 RequestBodyErrorHandler,
                 DatabaseServiceParamErrorHandler,
@@ -80,7 +78,6 @@ satelliteController.post('/by_offset', createController(async (req, res: Respons
                 ServerErrorHandler
             ]
         )
-        logError(e, req)
     }
 }))
 
@@ -95,7 +92,7 @@ export const PostCursorResBodyValidator = z.object({
     logs: z.array(ParsedLogValidator),
 })
 type PostPaginatedResBody = z.infer<typeof PostCursorResBodyValidator>
-satelliteController.post('/by_cursor', createController(async (req, res: Response<PostPaginatedResBody | GenericErrorResponse>) => {
+satelliteController.post('/by_cursor', ensureResponse(async (req, res: Response<PostPaginatedResBody | GenericErrorResponse>) => {
     try {
         const body = customErrorIfSafeParseError(PostCursorReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await getLogsByCursor(body.cursor, body.count)
@@ -106,7 +103,7 @@ satelliteController.post('/by_cursor', createController(async (req, res: Respons
         })
     }
     catch (e) {
-        handleError(e, res,
+        handleError(e, req, res,
             [
                 RequestBodyErrorHandler,
                 DatabaseServiceParamErrorHandler,
@@ -115,6 +112,5 @@ satelliteController.post('/by_cursor', createController(async (req, res: Respons
                 ServerErrorHandler
             ]
         )
-        logError(e, req)
     }
 }))
