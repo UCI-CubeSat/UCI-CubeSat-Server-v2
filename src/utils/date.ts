@@ -1,4 +1,4 @@
-import { StartNotBeforeEndError } from "@/services/errorHandling.js"
+import { StartNotBeforeEndError } from "@/error/custom/request.js"
 
 export const checkIfStartBeforeEnd = (start: number, end: number) => {
     if (start >= end) {

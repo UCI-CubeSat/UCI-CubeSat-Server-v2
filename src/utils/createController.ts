@@ -1,4 +1,4 @@
-import { GenericErrorResponse } from '@/services/errorHandling.js'
+import { GenericErrorResponse } from '@/error/index.js'
 import { logErrorNotCaught, logNoResponseSent, logSuccess } from '@/utils/logging.js'
 import type { Request, Response } from 'express'
 import { errorMessages } from './errorMessages.js'

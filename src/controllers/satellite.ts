@@ -1,6 +1,11 @@
+import { DatabaseDataError } from '@/error/custom/database.js'
+import { RequestBodyError } from '@/error/custom/request.js'
+import { DatabaseDataErrorHandler, DatabaseServiceParamErrorHandler, PrismaKnownRequestErrorHandler } from '@/error/handlers/database.js'
+import { ServerErrorHandler } from '@/error/handlers/generic.js'
+import { RequestBodyErrorHandler, StartNotBeforeEndErrorHandler } from '@/error/handlers/request.js'
+import { GenericErrorResponse, handleError } from '@/error/index.js'
 import { ParsedLogValidator } from '@/models/logs.js'
 import { countLogsAroundCursor, getLogsByCursor, getLogsByOffset, getLogsByTimeRange } from '@/services/db.js'
-import { DatabaseDataError, DatabaseDataErrorHandler, DatabaseServiceParamErrorHandler, GenericErrorResponse, PrismaKnownRequestErrorHandler, RequestBodyError, RequestBodyErrorHandler, ServerErrorHandler, StartNotBeforeEndErrorHandler, handleError } from "@/services/errorHandling.js"
 import { createController } from "@/utils/createController.js"
 import { customErrorIfSafeParseError } from "@/utils/customError.js"
 import { logError } from "@/utils/logging.js"
