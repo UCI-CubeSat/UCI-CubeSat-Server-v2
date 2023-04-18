@@ -1,10 +1,9 @@
-import { GenericErrorResponse } from '@/services/errorHandling.js'
-import { logErrorNotCaught, logNoResponseSent, logSuccess } from '@/utils/logging.js'
+import { GenericErrorResponse, logErrorNotCaught, logNoResponseSent, logSuccess } from '@/error/index.js'
 import type { Request, Response } from 'express'
 import { errorMessages } from './errorMessages.js'
 
 
-export const createController = (
+export const ensureResponse = (
     controllerFunction: (req: Request, res: Response) => Promise<void>
 ) => {
     return async (req: Request, res: Response) => {

@@ -1,8 +1,8 @@
+import { DatabaseServiceParamError } from '@/error/custom/database.js'
 import { customErrorIfSafeParseError } from '@/utils/customError.js'
 import { checkIfStartBeforeEnd } from '@/utils/date.js'
 import { PrismaClient, } from '@prisma/client'
 import { z } from 'zod'
-import { DatabaseServiceParamError } from './errorHandling.js'
 
 export const prisma = new PrismaClient()
 
