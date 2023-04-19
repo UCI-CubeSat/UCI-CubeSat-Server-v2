@@ -1,11 +1,7 @@
-ARG nodeVersion=18.13.0
-ARG nginxVersion=1.20.2
-ARG alpineVersion=3.11
-
 ###############################################
 # Node Base Image
 ###############################################
-FROM node:${nodeVersion}-alpine${alpineVersion} as node-base
+FROM node:18.13.0-alpine as node-base
 
 ###############################################
 # Builder Image
@@ -31,7 +27,7 @@ RUN \
 ###############################################
 # Production Image
 ###############################################
-FROM node:${nodeVersion}-alpine${alpineVersion} as production
+FROM node:18.13.0-alpine as production
 WORKDIR /opt/app
 RUN chmod -R 0777 /opt/app
 COPY --from=builder-base /app/node_modules ./node_modules
