@@ -1,4 +1,4 @@
-ARG nodeVersion=16.13.0
+ARG nodeVersion=18.13.0
 ARG nginxVersion=1.20.2
 ARG alpineVersion=3.11
 
