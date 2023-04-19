@@ -1,7 +1,6 @@
 import type { Log } from "@prisma/client"
 
 export const sampleLog: Log = {
-    id: 1,
     callsign: 'ABC',
     timestamp: 1,
     operationState: "ANTENNA_DEPLOYED",
@@ -25,7 +24,6 @@ export const sampleLog: Log = {
 }
 
 export const sampleLowPowerLog: Log = {
-    id: 1,
     callsign: 'ABC',
     timestamp: 1,
     operationState: "LOW_POWER",

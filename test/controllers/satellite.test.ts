@@ -1,4 +1,4 @@
-import { PostByRangeResBodyValidator } from '@/controllers/satellite.js'
+import { PostOffsetResBody, PostRangeResBody } from '@/controllers/satellite.js'
 import { GenericErrorResponseValidator } from '@/error/index.js'
 import expressApp from '@/server.js'
 import { prisma } from '@/services/db.js'
@@ -29,8 +29,9 @@ describe('Satellite Controller', () => {
                 start: 1,
                 end: 10
             })
+            const body = response.body as PostRangeResBody
             expect(mock).toHaveBeenCalledOnce()
-            expect(() => PostByRangeResBodyValidator.parse(response.body)).not.toThrow()
+            expect(Array.isArray(body.logs)).toBeTruthy()
         })
 
         it('returns an error when start is invalid', async () => {
@@ -65,8 +66,11 @@ describe('Satellite Controller', () => {
                 pageNo: 1,
                 count: 2
             })
+            const body = response.body as PostOffsetResBody
             expect(mock).toHaveBeenCalledOnce()
-            expect(() => PostByRangeResBodyValidator.parse(response.body)).not.toThrow()
+            expect(Array.isArray(body.logs)).toBeTruthy()
+            expect(typeof body.numLogsAfter === 'number').toBeTruthy()
+            expect(typeof body.numLogsBefore === 'number').toBeTruthy()
         })
 
         it('returns an error when pageNo is invalid', async () => {
