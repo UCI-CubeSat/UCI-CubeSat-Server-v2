@@ -11,7 +11,7 @@ const env_schema = z.object({
 })
 
 // Validate env and make sure the command used to start server matches env provided
-const _get_env = () => {
+const get_env = () => {
     const parsed_env = env_schema.parse(process.env)
     if (parsed_env.NODE_ENV !== parsed_env.ENV) {
         throw new Error("NODE_ENV and ENV do not match. Check if the .env file is the correct one.")
@@ -19,4 +19,4 @@ const _get_env = () => {
     return parsed_env
 }
 
-export const env = _get_env()
+export const env = get_env()

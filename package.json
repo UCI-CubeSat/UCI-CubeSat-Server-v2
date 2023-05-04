@@ -26,8 +26,9 @@
     "test": "cross-env NODE_ENV=development dotenv -e .env vitest",
     "db:pull": "npx prisma db pull",
     "db:generate": "npx prisma generate",
-    "db:seed": "cross-env NODE_ENV=production node -r dotenv/config ./dev/prisma/seed.js",
-    "db": "npm run db:pull && npm run db:generate"
+    "db": "npm run db:pull && npm run db:generate",
+    "db:seed:log": "cross-env NODE_ENV=development node -r dotenv/config ./dev/seed/log.js",
+    "db:seed": "npm run db:seed:log"
   },
   "author": "",
   "license": "ISC",

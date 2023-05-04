@@ -1,5 +1,7 @@
+// IMPORTANT: THIS WILL UPDATE LOG TABLE FOR ALL PEOPLE WORKING ON DEV INSTANCE
+// MAKE SURE TO NOTIFY TEAM BEFORE RUNNING
 import { env } from "@/services/env.js";
-import { Log, PrismaClient, User, } from '@prisma/client';
+import { Log, PrismaClient } from '@prisma/client';
 import { randomBytes } from "crypto";
 
 const prisma = new PrismaClient()
@@ -67,37 +69,20 @@ const generateChargingPayload = (secondsSinceEpoch: number) => {
 }
 
 
-// START OF SCRIPT TO UPDATE DEV DB WITH MOCK DATA
-console.log(`Attempting to update ${env.ENV} db with mock data.`)
+console.log(`Attempting to update ${env.ENV} db with mock log data.`)
 try {
-    // LOG TABLE
     // Clear existing logs
     await prisma.log.deleteMany();
     // Generate logs
     const logs: Log[] = []
-    // You can either uncomment the code below to generate logs or add the array manually
     const currentTimeInSeconds = Math.round(Date.now() / 1000)
     for (let i = 0; i < 50; i++) {
         logs.push(generateLog(currentTimeInSeconds - i))
     }
     // Save logs
     await prisma.log.createMany({ data: logs })
-
-
-    // USER TABLE
-    // Clear existing users
-    await prisma.user.deleteMany();
-    // Generate users
-    // Insert manually into the array users you want to be added to the user db and if they have subscribed
-    // MAKE SURE NOT TO COMMIT PERSONAL DETAILS BY ACCIDENT
-    const users: User[] = []
-    // Save users
-    await prisma.user.createMany({ data: users })
-
-
-    // MOCK DATA UPLOADED
-    console.log("Mock data has succesfully been updated!");
+    console.log("Mock log data has succesfully been updated!");
 }
 catch (e) {
-    console.error("There was an issue setting up the database:", e)
+    console.error("There was an issue when modifying the log table:", e)
 }
