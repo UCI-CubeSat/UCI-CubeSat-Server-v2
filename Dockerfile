@@ -33,6 +33,8 @@ COPY --from=builder-base /app/node_modules ./node_modules
 COPY . .
 ENV ENV=${ENV:-qa}
 ENV DATABASE_URL ${DATABASE_URL}
+RUN echo "DATABASE_URL"
+RUN echo ${$DATABASE_URL}
 RUN pnpm run build:prod
 RUN addgroup --system --gid 1001 nodejs
 USER 10000:10001
