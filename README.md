@@ -7,7 +7,7 @@ This repository is meant to be a the server used for groudstation dashboard.
 - Clone repository.
 - Run `pnpm install` to install dependancies.
 - Get .env file from team lead
-- Run `pnpm run db` to setup Prisma
+- Run `pnpm run db` to setup Prisma (also run this script whenever you pull main).
 - Run scripts below as needed.
 
 ## Scripts
@@ -25,6 +25,9 @@ There are scripts for running the build process, starting the server, and runnin
 - `db:pull` updates the current database schema using `DATABASE_URL` in .env
 - `db:generate` creates the TS lib for the database models (basically sets up Prisma for use in the codebase)
 - `db` runs both pull and generate
+- `db:seed` seed runs all seeding scripts to automate mock data creation and storage in dev db branch.
+- `db:seed:log` creates and replaces logs in dev db branch.
+- Note: To add/remove/update users from user table, run `npx prisma studio`. It will start a web client where you can modify user data (and log data as well but managing log data manually is a pain).
 
 ## About Structure
 
