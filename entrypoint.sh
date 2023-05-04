@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec pnpm run prod
+exec pnpm run start:prod
