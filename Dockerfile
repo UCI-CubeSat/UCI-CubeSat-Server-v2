@@ -30,7 +30,6 @@ RUN chmod -R 0777 /opt/app
 COPY --from=builder-base /app/node_modules ./node_modules
 COPY . .
 ENV ENV=${ENV:-qa}
-RUN pnpm run build:prod
 RUN addgroup --system --gid 1001 nodejs
 USER 10000:10001
 
