@@ -28,7 +28,9 @@
     "db:generate": "npx prisma generate",
     "db": "npm run db:pull && npm run db:generate",
     "db:seed:log": "cross-env NODE_ENV=development node -r dotenv/config ./dev/seed/log.js",
-    "db:seed": "npm run db:seed:log"
+    "db:seed": "npm run db:seed:log",
+    "kafka:seed:msg": "cross-env NODE_ENV=development node -r dotenv/config ./dev/seed/kafkaEmail.js",
+    "kafka:seed": "npm run kafka:seed:msg"
   },
   "author": "",
   "license": "ISC",
