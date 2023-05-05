@@ -1,9 +1,12 @@
-import { ParsedLogValidator } from '@/models/logs.js'
+import { RequestBodyError } from '@/error/custom/request.js'
+import { DatabaseDataErrorHandler, DatabaseServiceParamErrorHandler, PrismaKnownRequestErrorHandler } from '@/error/handlers/database.js'
+import { ServerErrorHandler } from '@/error/handlers/generic.js'
+import { RequestBodyErrorHandler, StartNotBeforeEndErrorHandler } from '@/error/handlers/request.js'
+import { GenericErrorResponse, handleError } from '@/error/index.js'
 import { countLogsAroundCursor, getLogsByCursor, getLogsByOffset, getLogsByTimeRange } from '@/services/db.js'
-import { DatabaseDataError, DatabaseDataErrorHandler, DatabaseServiceParamErrorHandler, GenericErrorResponse, PrismaKnownRequestErrorHandler, RequestBodyError, RequestBodyErrorHandler, ServerErrorHandler, StartNotBeforeEndErrorHandler, handleError } from "@/services/errorHandling.js"
-import { createController } from "@/utils/createController.js"
 import { customErrorIfSafeParseError } from "@/utils/customError.js"
-import { logError } from "@/utils/logging.js"
+import { ensureResponse } from "@/utils/ensureResponse.js"
+import { Log } from '@prisma/client'
 import { Response, Router } from "express"
 import { z } from "zod"
 
@@ -17,20 +20,20 @@ export const PostByRangeReqBodyValidator = z.object({
     start: z.number().min(1),
     end: z.number().min(1)
 })
-export const PostByRangeResBodyValidator = z.object({
-    logs: z.array(ParsedLogValidator)
-})
-type PostLogListResBody = z.infer<typeof PostByRangeResBodyValidator>
-satelliteController.post('/by_time_range', createController(async (req, res: Response<PostLogListResBody | GenericErrorResponse>) => {
+export type PostRangeResBody = {
+    logs: Log[]
+}
+
+satelliteController.post('/by_time_range', ensureResponse(async (req, res: Response<PostRangeResBody | GenericErrorResponse>) => {
     try {
         const body = customErrorIfSafeParseError(PostByRangeReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await getLogsByTimeRange(body.start, body.end)
         res.status(200).json({
-            logs: customErrorIfSafeParseError(z.array(ParsedLogValidator).safeParse(databaseLogs), DatabaseDataError)
+            logs: databaseLogs
         })
     }
     catch (e) {
-        handleError(e, res,
+        handleError(e, req, res,
             [
                 RequestBodyErrorHandler,
                 StartNotBeforeEndErrorHandler,
@@ -39,7 +42,6 @@ satelliteController.post('/by_time_range', createController(async (req, res: Res
                 ServerErrorHandler
             ]
         )
-        logError(e, req)
     }
 }))
 
@@ -48,25 +50,27 @@ export const PostOffsetReqBodyValidator = z.object({
     pageNo: z.number().min(1),
     count: z.number().min(1),
 })
-export const PostOffsetResBodyValidator = z.object({
-    logs: z.array(ParsedLogValidator),
-    numLogsAfter: z.number(),
-    numLogsBefore: z.number()
-})
+
+export type PostOffsetResBody = {
+    logs: Log[],
+    numLogsAfter: number,
+    numLogsBefore: number
+
+}
+
 // TODO: Handle error cases where databaseLogs is an empty array
-type PostOffsetResBody = z.infer<typeof PostOffsetResBodyValidator>
-satelliteController.post('/by_offset', createController(async (req, res: Response<PostOffsetResBody | GenericErrorResponse>) => {
+satelliteController.post('/by_offset', ensureResponse(async (req, res: Response<PostOffsetResBody | GenericErrorResponse>) => {
     try {
         const body = customErrorIfSafeParseError(PostOffsetReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await getLogsByOffset((body.pageNo - 1) * body.count, body.count)
         res.status(200).send({
-            logs: customErrorIfSafeParseError(z.array(ParsedLogValidator).safeParse(databaseLogs), DatabaseDataError),
+            logs: databaseLogs,
             numLogsAfter: await countLogsAroundCursor(databaseLogs[databaseLogs.length - 1].timestamp, "forward"),
             numLogsBefore: await countLogsAroundCursor(databaseLogs[0].timestamp, "backward")
         })
     }
     catch (e) {
-        handleError(e, res,
+        handleError(e, req, res,
             [
                 RequestBodyErrorHandler,
                 DatabaseServiceParamErrorHandler,
@@ -75,7 +79,6 @@ satelliteController.post('/by_offset', createController(async (req, res: Respons
                 ServerErrorHandler
             ]
         )
-        logError(e, req)
     }
 }))
 
@@ -86,22 +89,21 @@ export const PostCursorReqBodyValidator = z.object({
     count: z.number().min(1),
 })
 // TODO: Have endpoint return cursor for next and prev as well
-export const PostCursorResBodyValidator = z.object({
-    logs: z.array(ParsedLogValidator),
-})
-type PostPaginatedResBody = z.infer<typeof PostCursorResBodyValidator>
-satelliteController.post('/by_cursor', createController(async (req, res: Response<PostPaginatedResBody | GenericErrorResponse>) => {
+export type PostPaginatedResBody = {
+    logs: Log[]
+}
+satelliteController.post('/by_cursor', ensureResponse(async (req, res: Response<PostPaginatedResBody | GenericErrorResponse>) => {
     try {
         const body = customErrorIfSafeParseError(PostCursorReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await getLogsByCursor(body.cursor, body.count)
         res.status(200).send({
-            logs: customErrorIfSafeParseError(z.array(ParsedLogValidator).safeParse(databaseLogs), DatabaseDataError),
+            logs: databaseLogs,
             // numLogsAfter: await countLogsAroundCursor(databaseLogs[databaseLogs.length - 1].timestamp, "forward"),
             // numLogsBefore: await countLogsAroundCursor(databaseLogs[0].timestamp, "backward")
         })
     }
     catch (e) {
-        handleError(e, res,
+        handleError(e, req, res,
             [
                 RequestBodyErrorHandler,
                 DatabaseServiceParamErrorHandler,
@@ -110,6 +112,5 @@ satelliteController.post('/by_cursor', createController(async (req, res: Respons
                 ServerErrorHandler
             ]
         )
-        logError(e, req)
     }
 }))

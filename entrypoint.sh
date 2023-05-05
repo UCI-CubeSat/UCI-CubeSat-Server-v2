@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec npm run start:prod
+exec pnpm run start:prod

@@ -1,11 +1,7 @@
-ARG nodeVersion=16.13.0
-ARG nginxVersion=1.20.2
-ARG alpineVersion=3.11
-
 ###############################################
 # Node Base Image
 ###############################################
-FROM node:${nodeVersion}-alpine${alpineVersion} as node-base
+FROM node:18.13.0-alpine as node-base
 
 ###############################################
 # Builder Image
@@ -21,23 +17,21 @@ WORKDIR /app
 
 COPY .nvmrc* ./
 COPY package.json pnpm-lock.yaml* ./
-RUN \
-  if [ -f pnpm-lock.yaml ]; then npm install -g pnpm \
-  && pnpm i --frozen-lockfile; \
-  elif [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  else npm i --no-optional; \
-  fi
+RUN npm install -g pnpm 
+RUN pnpm i --frozen-lockfile;
 
 ###############################################
 # Production Image
 ###############################################
-FROM node:${nodeVersion}-alpine${alpineVersion} as production
+FROM node:18.13.0-alpine as production
+ARG DATABASE_URL
+RUN npm install -g pnpm 
 WORKDIR /opt/app
 RUN chmod -R 0777 /opt/app
 COPY --from=builder-base /app/node_modules ./node_modules
 COPY . .
 ENV ENV=${ENV:-qa}
-RUN npm run build:prod
+RUN DATABASE_URL=${DATABASE_URL} pnpm run build:prod
 RUN addgroup --system --gid 1001 nodejs
 USER 10000:10001
 

@@ -8,9 +8,8 @@ datasource db {
 }
 
 model Log {
-  id              Int                  @id @default(autoincrement())
   callsign        String               @db.VarChar(255)
-  timestamp       Int                  @unique
+  timestamp       Int                  @id
   operationState  Log_operationState
   errorCount      Int
   batteryVoltage  Float                @db.Float
@@ -31,39 +30,9 @@ model Log {
   obc             Log_obc
 }
 
-model b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl {
-  id              Int                                                                        @id @default(autoincrement())
-  callsign        String                                                                     @db.VarChar(255)
-  timestamp       Int
-  operationState  b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_operationState
-  errorCount      Int
-  batteryVoltage  Float                                                                      @db.Float
-  batteryCurrent  Float                                                                      @db.Float
-  batteryTemp     Float                                                                      @db.Float
-  chargingVoltage Float                                                                      @db.Float
-  isCharging      Boolean
-  panelVoltage    Float?                                                                     @db.Float
-  panelCurrent    Float?                                                                     @db.Float
-  satEventHistory b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_satEventHistory?
-  lat             Float                                                                      @db.Float
-  lon             Float                                                                      @db.Float
-  alt             Float                                                                      @db.Float
-  themistor1      Float                                                                      @db.Float
-  themistor2      Float                                                                      @db.Float
-  themistor3      Float                                                                      @db.Float
-  themistor4      Float                                                                      @db.Float
-  obc             b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_obc
-
-  @@map("_b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl")
-}
-
-enum b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_operationState {
-  IDLE
-  ANTENNA_DEPLOYED
-  LOW_POWER
-  HELLO_WORLD
-
-  @@map("_b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_operationState")
+model User {
+  email      String  @id @db.VarChar(320)
+  subscribed Boolean @default(false)
 }
 
 enum Log_operationState {
@@ -79,24 +48,8 @@ enum Log_satEventHistory {
   BATTERY_CHARGED
 }
 
-enum b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_satEventHistory {
-  ANTENNA_DEPLOYED
-  INITIAL_FLASH
-  BATTERY_CHARGED
-
-  @@map("_b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_satEventHistory")
-}
-
 enum Log_obc {
   FAILED
   DEGRADED
   OPERATIONAL
-}
-
-enum b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_obc {
-  FAILED
-  DEGRADED
-  OPERATIONAL
-
-  @@map("_b3083ca9_f201_57a4_963a_c380db803ad4_20230129002619_vrepl_obc")
 }
