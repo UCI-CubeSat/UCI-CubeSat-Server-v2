@@ -95,3 +95,14 @@ export const countLogsAroundCursor = async (cursor: number, direction: "forward"
         }
     })
 }
+
+/**
+ * 
+ */
+export const getUsersSubscribedToNotifications = async () => {
+    return prisma.user.findMany({
+        where: {
+            subscribed: true
+        },
+    })
+}

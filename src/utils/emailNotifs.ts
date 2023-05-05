@@ -1,37 +1,47 @@
 import { env } from "../services/env.js";
+import { getUsersSubscribedToNotifications } from "../services/db.js";
 import fetch from "node-fetch";
 
-const generateData = (message: string | undefined) => ({
-  sender: {
-    name: "UCI CubeSat",
-    email: "team.ucicubesat@gmail.com",
-  },
-  to: [
-    {
-      email: "liaojy2@uci.edu",
-      name: "Justin Liao",
-    },
-    {
-      email: "athadipa@uci.edu",
-      name: "Aishwarya Thadiparthi",
-    },
-  ],
-  subject: "Hello world",
-  htmlContent: `<html><head></head><body>Message: ${message}</p></body></html>`,
-});
+const generateData = async (message: string | undefined) => {
+  const users = await getUsersSubscribedToNotifications();
 
-const testEmailSend = async (message: string | undefined) => {
-  const res = await fetch("https://api.sendinblue.com/v3/smtp/email", {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "api-key": env.SENDINBLUE_APIKEY,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(generateData(message)),
-  });
+  const emails = users.map(({ email }) => ({
+    email,
+    name: "UCI CubeSat Email Notification Subscriber",
+  }));
 
-  console.log(res);
+  const emailContent =
+    env.ENV === "production"
+      ? `PRODUCTION<br />${message}`
+      : `DEVELOPMENT<br />${message}`;
+
+  return {
+    sender: {
+      name: "UCI CubeSat",
+      email: "team.ucicubesat@gmail.com",
+    },
+    to: emails,
+    subject: "Hello world",
+    htmlContent: `<html><head></head><body>${emailContent}</p></body></html>`,
+  };
 };
 
-export { testEmailSend };
+const sendEmailNotifications = async (message: string | undefined) => {
+  const body = await generateData(message);
+
+  try {
+    await fetch(env.SENDINBLUE_URL, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "api-key": env.SENDINBLUE_APIKEY,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    console.log(`Error sending email with message ${message}: `, e);
+  }
+};
+
+export { sendEmailNotifications };
