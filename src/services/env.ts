@@ -7,7 +7,8 @@ const env_schema = z.object({
     ENV: z.union([z.literal('production'), z.literal('development')]),
     PORT: z.string().transform(Number),
     HOST_NAME: z.string(),
-    FRONTEND_ORIGIN: z.string()
+    FRONTEND_ORIGIN: z.string(),
+    FRONTEND_BASE_ROUTE: z.string()
 })
 
 // Validate env and make sure the command used to start server matches env provided
