@@ -1,14 +1,22 @@
 import { DatabaseServiceParamError } from '@/error/custom/database.js'
 import { customErrorIfSafeParseError } from '@/utils/customError.js'
 import { checkIfStartBeforeEnd } from '@/utils/date.js'
-import { PrismaClient, } from '@prisma/client'
+import {Log, PrismaClient} from '@prisma/client';
 import { z } from 'zod'
+import {EnumFilters} from '@/controllers/satellite.js';
 
 export const prisma = new PrismaClient()
 
 /**
+ * Gets total log count from prisma
+ */
+export const getLogsCount = async () => {
+    return prisma.log.count()
+}
+
+/**
  * Gets logs from database with timestamp greater than or equal to `start` and less than or equal to `end`.
- * 
+ *
  * Will raise error if `start` is not before `end`.
  */
 export const getLogsByTimeRange = async (start: number, end: number) => {
@@ -30,7 +38,7 @@ export const getLogsByTimeRange = async (start: number, end: number) => {
 }
 /**
  * Gets `count` logs from database starting at and including `index`.
- * 
+ *
  * Will raise error if `index` is not non-negative and `count` is not non-negative
  */
 export const getLogsByOffset = async (index: number, count: number) => {
@@ -53,9 +61,9 @@ export const getLogsByOffset = async (index: number, count: number) => {
 
 /**
  * Gets `count` log after the `cursor`
- * 
+ *
  * Will raise error if `cursor` is not non-negative and `count` is not non-negative
- * 
+ *
  * Includes the cursor provided
  */
 export const getLogsByCursor = async (cursor: number, count: number) => {
@@ -77,10 +85,11 @@ export const getLogsByCursor = async (cursor: number, count: number) => {
 }
 /**
  * Returns count of logs before or after the `cursor`, depending on `direction`
- * 
+ *
  * Will raise error if `cursor` is not non-negative
- * 
- * "forward" returns count of older records (timestamp less than cursor, "backward" returns count of newer records (timestamp greater than cursor)
+ *
+ * "forward" returns count of older records (timestamp less than cursor, "backward" returns count of newer records
+ * (timestamp greater than cursor)
  */
 export const countLogsAroundCursor = async (cursor: number, direction: "forward" | "backward") => {
     // Check if cursor is non-negative
@@ -93,5 +102,47 @@ export const countLogsAroundCursor = async (cursor: number, direction: "forward"
                 lt: direction === "forward" ? cursor : undefined
             }
         }
+    })
+}
+
+
+// TODO: Make generic to accommodate new enums
+// TODO: Validate fields and enums
+// TODO: Get it in batches
+export const getLogsWithFilterAndTimeRange = async (start: number, end: number, fields?: string[], filters?: EnumFilters ) =>{
+
+    // Creates object with all fields that user requests
+
+    const selectedFields =
+        fields?.reduce<Record<string, boolean>>((before, current: string ) => {
+            before[current] = true;
+            return before
+        }, {})
+
+    // TODO: Programmatically add these if new data is necessary
+    const whereClauseObject : Record<string, object> =
+        {
+            timestamp: {
+                gte: start,
+                lte: end
+            }
+        }
+
+        if (filters) {
+            for (const [satelliteEnum, satelliteEnumValue] of Object.entries(filters)) {
+                if (satelliteEnum) {
+                    whereClauseObject[satelliteEnum] = {
+                        equals: satelliteEnumValue
+                    }
+                }
+            }
+        }
+
+    return await prisma.log.findMany({
+        where: whereClauseObject,
+        orderBy: {
+            timestamp: "desc"
+        },
+        select: selectedFields || undefined
     })
 }

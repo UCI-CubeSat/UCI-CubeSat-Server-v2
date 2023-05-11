@@ -11,3 +11,6 @@ prod
 
 # Coverage and logs
 coverage
+
+# IDE Specific
+.idea
