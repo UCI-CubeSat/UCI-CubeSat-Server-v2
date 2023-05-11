@@ -15,6 +15,7 @@ import { ensureResponse } from "@/utils/ensureResponse.js"
 import { Log } from '@prisma/client'
 import { Response, Router } from "express"
 import { z} from 'zod';
+import {convertToCSV} from '@/utils/csvConverter.js';
 
 export const satelliteController = Router()
 
@@ -136,15 +137,15 @@ satelliteController.post('/by_cursor', ensureResponse(async (req, res: Response<
  * filters: Object representing all the enums and their respective desired values to filter against
  */
 
-// Partial returns logs but every field is optional
-export type PostFilteredResBody = {
-    logs: Partial<Log>[];
-}
+export type PostFilteredResBody = string
 
+// export type PostFilteredResBody = {
+//     logs: Partial<Log>[];
+// }
 
 const OperationStateEnum = z.enum(['IDLE', 'ANTENNA_DEPLOYED', 'LOW_POWER', 'HELLO_WORLD'])
-const ObcEnum = z.enum(['ANTENNA_DEPLOYED', 'INITIAL_FLASH', 'BATTERY_CHARGED'])
-const SatEventHistoryEnum = z.enum(['FAILED', 'DEGRADED', 'OPERATIONAL'])
+const SatEventHistoryEnum = z.enum(['ANTENNA_DEPLOYED', 'INITIAL_FLASH', 'BATTERY_CHARGED'])
+const ObcEnum = z.enum(['FAILED', 'DEGRADED', 'OPERATIONAL'])
 
 const EnumFiltersObject = z.object({
     operationState: OperationStateEnum.optional(),
@@ -164,12 +165,14 @@ satelliteController.post('/logs', ensureResponse(async (req, res: Response<PostF
     try {
         const {start, end, fields, filters} = customErrorIfSafeParseError(PostLogsReqBodyValidator.safeParse(req.body), RequestBodyError)
         const databaseLogs = await getLogsWithFilterAndTimeRange(start, end, fields, filters)
-        // TODO: Call function to process logs and convert to CSV format
 
-        // TODO: Properly send logs as CSV files
-        res.status(200).send({
-            logs: databaseLogs,
-        })
+        const csvLogs = convertToCSV(databaseLogs)
+
+        res.status(200).attachment('LogData.csv').send(csvLogs);
+
+        // res.status(200).send({
+        //     logs: databaseLogs
+        // })
     }
     catch (e) {
         handleError(e, req, res,

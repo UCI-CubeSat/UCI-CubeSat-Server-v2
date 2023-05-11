@@ -106,9 +106,7 @@ export const countLogsAroundCursor = async (cursor: number, direction: "forward"
 }
 
 
-// TODO: Make generic to accommodate new enums
-// TODO: Validate fields and enums
-// TODO: Get it in batches
+// TODO: More efficient queries, if possible.
 export const getLogsWithFilterAndTimeRange = async (start: number, end: number, fields?: string[], filters?: EnumFilters ) =>{
 
     // Creates object with all fields that user requests
@@ -119,7 +117,6 @@ export const getLogsWithFilterAndTimeRange = async (start: number, end: number, 
             return before
         }, {})
 
-    // TODO: Programmatically add these if new data is necessary
     const whereClauseObject : Record<string, object> =
         {
             timestamp: {
