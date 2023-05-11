@@ -8,7 +8,7 @@ import { Server } from 'http'
 import request from 'supertest'
 import { mockFindMany, mockFindManyFail } from 'test/mockData/db.js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
+import {sampleLogs} from '../mockData/log.js';
 
 
 describe('Satellite Controller', () => {

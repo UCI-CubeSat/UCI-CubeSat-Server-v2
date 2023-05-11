@@ -1,5 +1,5 @@
 import { errorMessages } from "@/utils/errorMessages.js"
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/index.js"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js"
 import { Response } from "express"
 import { DatabaseDataError, DatabaseServiceParamError } from "../custom/database.js"
 import { ErrorHandler, GenericErrorResponse, createGeneralInfo } from "../index.js"
