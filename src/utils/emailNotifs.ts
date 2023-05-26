@@ -44,4 +44,4 @@ const sendEmailNotifications = async (message: string | undefined) => {
   }
 };
 
-export { sendEmailNotifications };
+export { generateData, sendEmailNotifications };
