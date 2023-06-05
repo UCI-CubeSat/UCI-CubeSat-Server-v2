@@ -1,6 +1,7 @@
+import { getUsersSubscribedToNotifications } from "@/services/db.js";
+import { generateNotificationEmails, sendEmail } from "@/services/email.js";
 import { Kafka } from "kafkajs";
 import { env } from "../services/env.js";
-import { sendEmailNotifications } from "@/utils/emailNotifs.js";
 
 const kafka = new Kafka({
   brokers: [`${env.KAFKA_URL}:${env.KAFKA_PORT}`],
@@ -24,7 +25,9 @@ const kafkaRun = async () => {
         console.log(`received message: ${message.value?.toString()}`);
 
         // send email
-        sendEmailNotifications(message.value?.toString());
+        const usersSubscribed = await getUsersSubscribedToNotifications()
+        const emailBodies = generateNotificationEmails(message.value?.toString(), usersSubscribed)
+        sendEmail(emailBodies);
       },
     });
 
@@ -35,3 +38,4 @@ const kafkaRun = async () => {
 };
 
 export { kafkaRun };
+

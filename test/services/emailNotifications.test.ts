@@ -1,7 +1,7 @@
 import expressApp from "@/server.js";
 import { getUsersSubscribedToNotifications } from "@/services/db.js";
+import { generateNotificationEmails } from "@/services/email.js";
 import { env } from "@/services/env.js";
-import { generateData } from "@/utils/emailNotifs.js";
 import { Server } from "http";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -28,8 +28,7 @@ describe("Email Notification Service", () => {
 
   describe("generateData", () => {
     it("returns an object with sender and sendee data", async () => {
-      const data = await generateData("test");
-
+      const data = await generateNotificationEmails("test", await getUsersSubscribedToNotifications());
       expect(typeof data === "object").toBeTruthy();
 
       expect(typeof data.sender === "object").toBeTruthy();
