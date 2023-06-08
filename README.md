@@ -7,6 +7,7 @@ This repository is meant to be a the server used for groudstation dashboard.
 - Clone repository.
 - Run `pnpm install` to install dependancies.
 - Get .env file from team lead
+- Make sure to create a localhost alias for the `HOST_NAME` if needed ([Instructions](https://docs.google.com/document/d/1oUcxWJxfT3Z9tPbsf9MT_YQPwSZO7H9nopeJweSMaZ0/edit))
 - Run `pnpm run db` to setup Prisma (also run this script whenever you pull main).
 - Run scripts below as needed.
 
