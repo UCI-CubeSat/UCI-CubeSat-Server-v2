@@ -96,9 +96,15 @@ export const countLogsAroundCursor = async (cursor: number, direction: "forward"
     })
 }
 
-/**
- * 
- */
+
+export const getUserWithEmail = async (email:string) => {
+    return await prisma.user.findUniqueOrThrow({
+        where:{
+            email
+        }
+    })
+}
+
 export const getUsersSubscribedToNotifications = async () => {
     return prisma.user.findMany({
         where: {
